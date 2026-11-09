@@ -1,4 +1,4 @@
-# Wortise - prueba técnica fullstack junior
+# Wortise - prueba técnica fullstack
 
 Aplicación web para gestionar artículos. Incluye autenticación con email y contraseña, operaciones privadas sobre artículos propios y una página pública con autores registrados y búsqueda de artículos
 
