@@ -1,4 +1,7 @@
-# Wortise - prueba técnica fullstack
+# Bindin.GG - prueba técnica fullstack
+
+aplicación full stack de gestión de artículos desarrollada en 7 días como parte de un desafío técnico
+el proyecto fue desplegado inicialmente en Vercel, Railway y MongoDB Atlas. Posteriormente, migré el backend a un VPS Linux utilizando Docker, manteniendo el frontend en Vercel y la base de datos en MongoDB Atlas
 
 Aplicación web para gestionar artículos. Incluye autenticación con email y contraseña, operaciones privadas sobre artículos propios y una página pública con autores registrados y búsqueda de artículos
 
@@ -37,6 +40,16 @@ Aplicación web para gestionar artículos. Incluye autenticación con email y co
 - MongoDB mediante el driver nativo
 - Better Auth con adaptador de MongoDB
 - Zod
+
+### Infraestructura y DevOps
+
+- Docker para contenerizar el backend
+- Docker Hub como registro de imágenes
+- VPS Linux para alojar el backend
+- GitHub Actions para integración continua
+- Vercel para el frontend
+- MongoDB Atlas como base de datos administrada
+- Railway como plataforma utilizada en el despliegue inicial
 
 ## Arquitectura
 
@@ -95,6 +108,42 @@ TanStack Form administra estado, envío y errores de los formularios. Los esquem
 ### Ownership de artículos
 
 El autor se obtiene siempre de la sesión y nunca del cuerpo enviado por el cliente. Para editar o eliminar, el repositorio filtra simultáneamente por `_id` y `authorId`. La interfaz oculta acciones no permitidas, pero la autorización efectiva se valida en el servidor
+
+## Despliegue e infraestructura
+
+La aplicación utiliza una arquitectura separada entre frontend, backend y base de datos.
+
+- **Frontend:** desplegado en Vercel.
+- **Backend:** API de Hono ejecutándose dentro de un contenedor Docker en un VPS Linux.
+- **Base de datos:** MongoDB Atlas.
+- **Registro de imágenes:** Docker Hub.
+
+### Migración de Railway a VPS
+
+El backend se desplegó inicialmente en Railway. Posteriormente lo migré a un VPS Linux para centralizar la infraestructura y reducir la dependencia de servicios administrados.
+
+Para realizar la migración:
+
+1. Preparé un Dockerfile para construir y ejecutar el backend dentro de un contenedor.
+2. Adapté la configuración del monorepo para incluir las dependencias y contratos compartidos necesarios.
+3. Construí la imagen Docker y la publiqué en Docker Hub.
+4. Descargué la imagen en el VPS y configuré las variables de entorno.
+5. Inicié el contenedor exponiendo el puerto de la API y verifiqué su funcionamiento.
+
+El frontend continúa alojado en Vercel y se comunica con el backend desplegado en el VPS.
+
+### Despliegue manual
+
+El despliegue del backend se realiza manualmente utilizando Docker
+cuando se necesita publicar una nueva versión:
+
+1. Se construye una nueva imagen del backend
+2. Se publica en Docker Hub
+3. Se descarga la imagen actualizada en el VPS
+4. Se recrea el contenedor con la configuración correspondiente
+5. Se verifica el funcionamiento de la API
+
+esto me permitió trabajar con contenedores, registros de imágenes, administración de servidores Linux y migración de aplicaciones entre proveedores
 
 ## Requisitos previos
 
@@ -213,16 +262,18 @@ El código fue revisado, ejecutado y testeado manualmente durante el desarrollo.
 
 El backend incluye tests de integración para autenticación, autorización, validación, búsqueda, paginación y el flujo CRUD principal. La suite utiliza Vitest, las solicitudes internas de Hono y una instancia temporal de MongoDB, aislada de las bases de desarrollo y producción
 
-## Integración continua
+## Integración continua y despliegue
 
-El workflow de GitHub Actions se ejecuta en cada `push` y `pull_request`. Instala las dependencias con `npm ci` y verifica:
+el workflow de GitHub Actions se ejecuta en cada `push` y `pull_request`. Instala las dependencias con `npm ci` y verifica:
 
 - typecheck de `shared`;
 - typecheck de `server`;
 - build y typecheck de `client`;
 - tests de integración del backend.
 
-La pipeline usa Node.js 22 y una instancia temporal de MongoDB. No necesita credenciales ni acceso a las bases de desarrollo o producción.
+La pipeline usa Node.js 26 y una instancia temporal de MongoDB. No necesita credenciales ni acceso a las bases de desarrollo o producción
+
+La integración continua está automatizada mediante GitHub Actions, mientras que el despliegue del backend en el VPS se administra manualmente con Docker. las verificaciones de código y las pruebas automatizadas se mantienen separadas del proceso de publicación de nuevas versiones
 
 ## Uso de IA
 
